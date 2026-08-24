@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+                          http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+  <kcfgfile name=""/>
+  <group name="General">
+    <entry name="showWeekNumbers" type="Bool">
+      <default>false</default>
+    </entry>
+    <entry name="dimPastEvents" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="hidePastEvents" type="Bool">
+      <default>false</default>
+    </entry>
+    <entry name="agendaWidth" type="Int">
+      <default>280</default>
+    </entry>
+    <entry name="showBackground" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="accentColor" type="Color">
+      <default>#f67400</default>
+    </entry>
+    <entry name="useCalendarColors" type="Bool">
+      <default>false</default>
+    </entry>
+  </group>
+</kcfg>

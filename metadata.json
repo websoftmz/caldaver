@@ -1,0 +1,21 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Id": "de.websoftmz.caldaver",
+        "Name": "caldaver",
+        "Description": "Shows all events of the current month from Akonadi/CalDAV on the desktop",
+        "Icon": "office-calendar",
+        "Category": "Date and Time",
+        "License": "MIT",
+        "Version": "1.0",
+        "EnabledByDefault": true,
+        "Authors": [
+            {
+                "Name": "websoftmz",
+                "Email": "info@websoftmz.de"
+            }
+        ],
+        "Website": "https://github.com/websoftmz/caldaver"
+    },
+    "X-Plasma-API-Minimum-Version": "6.4"
+}

@@ -1,0 +1,7 @@
+# Credentials - never check these in
+.env
+
+# Editor and system leftovers
+*~
+*.swp
+.DS_Store
