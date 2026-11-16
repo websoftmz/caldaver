@@ -339,6 +339,12 @@ PlasmoidItem {
                     }
                 }
 
+                PlasmaComponents.Label {
+                    text: "v" + Plasmoid.metaData.version
+                    font: Kirigami.Theme.smallFont
+                    opacity: 0.7
+                }
+
                 PlasmaComponents.ToolButton {
                     icon.name: "go-jump-today-symbolic"
                     display: PlasmaComponents.AbstractButton.IconOnly

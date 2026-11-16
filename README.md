@@ -66,12 +66,27 @@ point. Finally right-click the desktop → **Lock Widgets** so nothing slips out
 ### Updating
 
 ```bash
-git pull
+git pull --ff-only
 kpackagetool6 --type Plasma/Applet --upgrade .
 kquitapp6 plasmashell && (nohup plasmashell > /dev/null 2>&1 &)
 ```
 
 Restarting the shell is necessary because Plasma caches QML.
+
+Run these commands in your local repository on the computer running the widget.
+Pushing to Gitea only updates the repository on the server; it does not install the
+widget. `git pull --ff-only` fetches the configured upstream (here: `origin/main`
+on Gitea). Your widget settings are kept during the upgrade.
+
+The installed version is shown in the widget header, next to the Today button.
+You can also check it without restarting Plasma:
+
+```bash
+grep '"Version"' "${XDG_DATA_HOME:-$HOME/.local/share}/plasma/plasmoids/de.websoftmz.caldaver/metadata.json"
+```
+
+The version comes from `KPlugin.Version` in `metadata.json`. Increase it before
+publishing an update so installed releases can be distinguished.
 
 ### Uninstalling
 

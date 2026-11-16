@@ -7,7 +7,7 @@
         "Icon": "office-calendar",
         "Category": "Date and Time",
         "License": "MIT",
-        "Version": "1.0",
+        "Version": "1.0.1",
         "EnabledByDefault": true,
         "Authors": [
             {
