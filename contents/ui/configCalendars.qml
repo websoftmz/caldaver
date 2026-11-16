@@ -26,7 +26,7 @@ KCM.ScrollViewKCM {
     header: Kirigami.InlineMessage {
         visible: true
         position: Kirigami.InlineMessage.Position.Header
-        text: i18n("Choose which of the calendars known to Akonadi appear in the widget. The Radicale calendar has to be ticked.")
+        text: i18n("Choose which of the calendars known to Akonadi appear in the widget. Changes are saved immediately and also affect other Plasma widgets using the PIM calendar plugin, even if you cancel this dialog.")
     }
 
     view: ListView {

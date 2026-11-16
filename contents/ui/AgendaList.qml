@@ -21,14 +21,15 @@ Item {
     // Jumps to the first entry of the given day.
     function scrollToKey(key) {
         if (!agenda.agendaModel) {
-            return;
+            return false;
         }
         for (let i = 0; i < agenda.agendaModel.count; ++i) {
             if (agenda.agendaModel.get(i).key === key) {
                 view.positionViewAtIndex(i, ListView.Beginning);
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     PlasmaComponents.ScrollView {
@@ -160,6 +161,6 @@ Item {
         visible: !agenda.agendaModel || agenda.agendaModel.count === 0
         iconName: "office-calendar"
         text: i18n("No events this month")
-        explanation: i18n("If events are missing, check under \"Calendars\" in the widget settings whether the Radicale calendar is enabled.")
+        explanation: i18n("If events are missing, check under \"Calendars\" in the widget settings whether the desired calendar is enabled.")
     }
 }

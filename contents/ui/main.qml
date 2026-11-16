@@ -22,6 +22,7 @@ PlasmoidItem {
     // ------------------------------------------------------------------ State
     property date today: new Date()
     property string selectedKey: ""     // "YYYY-MM-DD" of the clicked day
+    property string pendingScrollKey: ""
 
     // Accent color of the widget. Used for the event dots, the agenda color
     // bars, the today highlight and the day selection. The default is orange,
@@ -49,15 +50,10 @@ PlasmoidItem {
         return d.getFullYear() + "-" + (m < 10 ? "0" + m : m) + "-" + (day < 10 ? "0" + day : day);
     }
 
-    // First day of the 42 day grid: start of the week that contains the 1st
+    // Use the backend's offset so the dates match its week numbers and range.
     function computeGridStart() {
-        const first = new Date(backend.year, backend.month - 1, 1);
-        const fdow = Qt.locale().firstDayOfWeek;   // 0 = Sunday, 1 = Monday
-        let delta = first.getDay() - fdow;         // getDay(): 0 = Sunday
-        if (delta < 0) {
-            delta += 7;
-        }
-        return new Date(backend.year, backend.month - 1, 1 - delta);
+        return new Date(backend.year, backend.month - 1,
+                        1 - backend.daysModel.indexOfFirstCurrentEntry);
     }
 
     // Identity of an event, used to drop duplicates handed out by DaysModel.
@@ -65,12 +61,12 @@ PlasmoidItem {
     // the identity. Two entries that agree on all of it are indistinguishable
     // in this widget anyway.
     function eventSignature(ev) {
-        return [ev.title,
+        return JSON.stringify([ev.title,
                 ev.description,
                 ev.isAllDay,
                 ev.eventColor,
                 ev.startDateTime ? ev.startDateTime.getTime() : "",
-                ev.endDateTime ? ev.endDateTime.getTime() : ""].join(" ");
+                ev.endDateTime ? ev.endDateTime.getTime() : ""]);
     }
 
     // Events of one day: duplicates removed, all day ones first, then in
@@ -174,8 +170,29 @@ PlasmoidItem {
                         ? ""
                         : ev.endDateTime.toLocaleTimeString(Qt.locale(), "hh:mm"),
                     "eventColor": (ev.eventColor && ev.eventColor.length > 0) ? ev.eventColor : "",
-                    "isPast": past
+                    "isPast": past,
+                    "endMs": endMs
                 });
+            }
+        }
+
+        Qt.callLater(function () {
+            if (root.pendingScrollKey !== "" && root.fullRepresentationItem
+                    && root.fullRepresentationItem.scrollToKey(root.pendingScrollKey)) {
+                root.pendingScrollKey = "";
+            }
+        });
+    }
+
+    // Update time-dependent roles without resetting the agenda's scroll position.
+    function updatePastEvents() {
+        const nowMs = new Date().getTime();
+        for (let i = monthAgendaModel.count - 1; i >= 0; --i) {
+            const past = monthAgendaModel.get(i).endMs < nowMs;
+            if (Plasmoid.configuration.hidePastEvents && past) {
+                monthAgendaModel.remove(i);
+            } else {
+                monthAgendaModel.setProperty(i, "isPast", past);
             }
         }
     }
@@ -244,7 +261,7 @@ PlasmoidItem {
         function onPluginsChanged() { root.scheduleRebuild(); }
     }
 
-    // Notice the change of date at midnight
+    // Refresh expired events each minute and notice the date change at midnight.
     Timer {
         interval: 60000
         running: true
@@ -254,6 +271,8 @@ PlasmoidItem {
             if (now.toDateString() !== root.today.toDateString()) {
                 root.today = now;
                 root.scheduleRebuild();
+            } else {
+                root.updatePastEvents();
             }
         }
     }
@@ -266,6 +285,10 @@ PlasmoidItem {
 
     // ------------------------------------------------------------------ Layout
     fullRepresentation: Item {
+        function scrollToKey(key) {
+            return agendaList.scrollToKey(key);
+        }
+
         // These values determine the size the widget is first dropped onto the
         // desktop with - not the one of the PlasmoidItem root object.
         Layout.minimumWidth: Kirigami.Units.gridUnit * 26
@@ -289,7 +312,10 @@ PlasmoidItem {
                     text: i18n("Previous month")
                     PlasmaComponents.ToolTip.text: text
                     PlasmaComponents.ToolTip.visible: hovered
-                    onClicked: backend.previousMonth()
+                    onClicked: {
+                        root.pendingScrollKey = "";
+                        backend.previousMonth();
+                    }
                 }
 
                 Kirigami.Heading {
@@ -307,7 +333,10 @@ PlasmoidItem {
                     text: i18n("Next month")
                     PlasmaComponents.ToolTip.text: text
                     PlasmaComponents.ToolTip.visible: hovered
-                    onClicked: backend.nextMonth()
+                    onClicked: {
+                        root.pendingScrollKey = "";
+                        backend.nextMonth();
+                    }
                 }
 
                 PlasmaComponents.ToolButton {
@@ -320,7 +349,8 @@ PlasmoidItem {
                         root.today = new Date();
                         backend.resetToToday();
                         root.selectedKey = root.dateKey(root.today);
-                        agendaList.scrollToKey(root.selectedKey);
+                        root.pendingScrollKey = root.selectedKey;
+                        root.scheduleRebuild();
                     }
                 }
             }
@@ -345,6 +375,7 @@ PlasmoidItem {
                     useCalendarColors: root.useCalendarColors
 
                     onDayClicked: function (key) {
+                        root.pendingScrollKey = "";
                         root.selectedKey = key;
                         agendaList.scrollToKey(key);
                     }

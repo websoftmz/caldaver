@@ -110,6 +110,8 @@ Right-click the widget → **Configure caldaver…**
 ### Calendars
 
 Selects which of the calendars known to Akonadi are shown. Changes take effect right away.
+The selection is shared with other Plasma widgets using the PIM calendar plugin.
+It is saved immediately, even if you cancel the settings dialog.
 
 ### Appearance
 
@@ -159,6 +161,25 @@ Desktop widgets always sit below the windows. To keep the calendar permanently v
 use "Show Desktop" (Meta+D) or a KWin window rule — that is not the widget's job.
 
 ## Development
+
+Run the JavaScript regression tests with Node.js (no additional packages needed):
+
+```bash
+node --test tests/calendar.test.cjs
+```
+
+The tests exercise the widget's QML JavaScript functions with simulated calendar data
+and time. Rendering and Akonadi integration still need to be checked in Plasma.
+
+Preview the current source without installing it, from a terminal in your KDE session:
+
+```bash
+plasmawindowed "$PWD"
+```
+
+The preview uses its own settings, including the calendar selection, separate from
+`plasmashell`. KDE component imports need access to the session D-Bus; they may hang
+inside a restricted sandbox even when the widget works in the desktop session.
 
 ```bash
 kpackagetool6 --type Plasma/Applet --upgrade .
